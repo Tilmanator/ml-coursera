@@ -1,0 +1,6 @@
+*.pdf
+.DS_Store
+**/lib/
+**/submit.m
+**/token.mat
+**/octave-workspace
