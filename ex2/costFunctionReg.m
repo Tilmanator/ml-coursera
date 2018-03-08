@@ -18,6 +18,14 @@ grad = zeros(size(theta));
 %               derivatives of the cost w.r.t. each parameter in theta
 
 
+% Take cost function and add regularization term
+% First value of theta is not considered in linearization term
+%J = 1.0/m* sum( -y .* log(sigmoid(X*theta)) - (ones(size(y)) - y).*log(ones(size(X*theta)) - sigmoid(X*theta))) + lambda/(2*m)*(sum(theta.^2) - theta(1)^2);
+J = 1.0/m* sum( -y .* log(sigmoid(X*theta)) - (ones(size(y)) - y).*log(ones(size(X*theta)) - sigmoid(X*theta))) + lambda/(2*m)*(sum(theta(2:end).^2));
+
+% Don't use regularization on the constant term
+% Also indices start at 1
+grad = 1.0/m * (X' * ( sigmoid (X*theta) - y)) + vertcat(0,lambda/m*theta(2:end));
 
 
 
