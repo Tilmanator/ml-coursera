@@ -62,29 +62,50 @@ Theta2_grad = zeros(size(Theta2));
 %               and Theta2_grad from Part 2.
 %
 
-why = zeros(size(y,1), num_labels);
+% m = num samples
+one_hot_y = zeros(m, num_labels);
 
 % Convert to one-hot encoding row-wise
-for i = 1:size(y,1)
-  why(i,y(i)) = 1;
+for i = 1:m
+  one_hot_y(i,y(i)) = 1;
 endfor
 
-% This is feedforward from predict
-a2 = sigmoid([ones(m, 1) X] * Theta1');
-a3 = sigmoid([ones(m, 1) a2] * Theta2');
+% This is feedforward, keep track of vars for backpropogation
+a1 = [ones(m,1) X];
+z2 = a1 * Theta1';
+a2 = [ones(m,1) sigmoid(z2)];
+z3 = a2 * Theta2';
+a3 = sigmoid(z3);
+
+% Cost function
+% vectorized, inner sum() returns vector of columnar sums
+J = 1.0/m *sum(sum( -one_hot_y .* log(a3) - (1.0 .- one_hot_y).*log(1.0 .- a3)));
+
+% Regularized cost function
+% explicitly sum all squared values for theta1 and theta2 excluding bias unit (1st element)
+J += lambda/(2*m)* (sum(sum(Theta1(:, 2:end).^2)) + sum(sum(Theta2(:, 2:end).^2)));
 
 
-hyp = zeros(size(y,1), num_labels);
+% Backpropogation
 
-% for each label, add the cost of all these predictions vectorize this?
-for i=1:num_labels
-  J = J + 1.0/m* sum( -why(:,i) .* log(a3(:,i)) - (1.0 .- why(:,i)).*log(1.0 .- a3(:,i)));
-endfor
+% Output layer error is simple, note a3 = h(z3)
+d3 = a3 - one_hot_y;
 
+% ignore bias unit from Theta2 (z2 doesn't have this anyways), this automatically excludes d2(0)
+% vectorized over all samples
+d2 = d3*Theta2(:,2:end) .* sigmoidGradient(z2);
 
+% ∆(l) = ∆(l) + δ(l+1)(a(l))T vectorized over all samples, then D(l) = 1/m*∆(l)
+delta1 = d2' * a1 ./ m;
+delta2 = d3' * a2 ./ m;
 
+Theta1_grad = delta1;
+Theta2_grad = delta2;
 
-
+% Regularized gradient
+% Just replace the first column with 0 to exclude bias term regularization
+Theta1_grad += lambda/m*[zeros(size(Theta1,1), 1), Theta1(:,2:end)];
+Theta2_grad += lambda/m*[zeros(size(Theta2,1), 1), Theta2(:,2:end)];
 
 
 

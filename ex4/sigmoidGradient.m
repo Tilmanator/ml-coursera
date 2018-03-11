@@ -14,8 +14,8 @@ g = zeros(size(z));
 
 
 
-
-
+% g′(z) = g(z)(1−g(z)) as per formula
+g = sigmoid(z).*(1.0 .- sigmoid(z));
 
 
 
