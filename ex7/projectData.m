@@ -18,8 +18,8 @@ Z = zeros(size(X, 1), K);
 %                    projection_k = x' * U(:, k);
 %
 
-
-
+% Only consider first K dimensions in each row of U
+Z = X*U(:,1:K);
 
 % =============================================================
 
