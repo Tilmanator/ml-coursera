@@ -42,9 +42,13 @@ Theta_grad = zeros(size(Theta));
 
 
 
+% Vectorized, only consider sample if R(i,j)=1
+J = sum(sum((X*Theta'.*R - Y.*R).^2))/2;
+J += lambda/2*sum(sum((Theta.^2))) + lambda/2*sum(sum(X.^2));
 
-
-
+% Regularized
+X_grad = (X*Theta'.*R - Y.*R)*Theta + lambda*X;
+Theta_grad = (X*Theta'.*R - Y.*R)'*X + lambda*Theta;
 
 
 
